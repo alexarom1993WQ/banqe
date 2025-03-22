@@ -274,6 +274,7 @@ export default function Dashboard() {
   const backgroundColors = [
     { name: "أبيض", class: "bg-white" },
     { name: "أزرق فاتح", class: "bg-blue-50" },
+    { name: "أزرق بارد", class: "bg-sky-50" },
     { name: "أخضر فاتح", class: "bg-green-50" },
     { name: "أصفر فاتح", class: "bg-yellow-50" },
     { name: "وردي فاتح", class: "bg-pink-50" },
@@ -284,12 +285,12 @@ export default function Dashboard() {
   return (
     <div
       ref={dashboardRef}
-      className={`space-y-4 md:space-y-6 p-0 min-h-screen h-screen w-screen ${currentBackgroundColor} flex flex-col items-center`}
+      className={`space-y-4 md:space-y-6 p-4 min-h-screen ${currentBackgroundColor}`}
     >
       {/* رأس الصفحة */}
 
       {/* بطاقة الرصيد الرئيسية */}
-      <Card className="bg-gradient-to-r from-blue-500 to-blue-400 text-white overflow-hidden relative w-full max-w-4xl shadow-xl rounded-xl border border-primary-foreground/5 backdrop-blur-sm">
+      <Card className="bg-gradient-to-r from-blue-500 to-blue-400 text-white overflow-hidden relative w-full h-full shadow-xl rounded-xl border border-primary-foreground/5 backdrop-blur-sm">
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-xl"></div>
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-8 -mb-8 blur-lg"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
