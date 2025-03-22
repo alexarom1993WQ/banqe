@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -30,6 +30,8 @@ import {
   Plus,
   Wallet,
   Smartphone,
+  Palette,
+  RotateCcw,
 } from "lucide-react";
 import NavigationMenu from "./NavigationMenu";
 import Bell from "./Bell";
@@ -37,6 +39,7 @@ import DepositFunds from "./DepositFunds";
 import OpenNewAccount from "./OpenNewAccount";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "../ui/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export default function Dashboard() {
   const [isOpenAccountDialogOpen, setIsOpenAccountDialogOpen] = useState(false);
@@ -54,6 +57,13 @@ export default function Dashboard() {
   const [showWalletsSection, setShowWalletsSection] = useState(true);
   const [showAccountNumber, setShowAccountNumber] = useState(false);
   const [accountActivated, setAccountActivated] = useState(false);
+  const [currentBackgroundColor, setCurrentBackgroundColor] =
+    useState("bg-white");
+  const [showColorPicker, setShowColorPicker] = useState(false);
+
+  // حفظ الألوان والأنماط الأصلية
+  const originalStylesRef = useRef(null);
+  const dashboardRef = useRef(null);
 
   const { toast } = useToast();
 
@@ -129,6 +139,43 @@ export default function Dashboard() {
     fetchCustomerData();
   }, []);
 
+  // حفظ الأنماط الأصلية عند تحميل المكون
+  useEffect(() => {
+    if (dashboardRef.current && !originalStylesRef.current) {
+      // حفظ الأنماط الأصلية لجميع العناصر
+      const saveOriginalStyles = () => {
+        const elements = dashboardRef.current.querySelectorAll("*");
+        const stylesMap = new Map();
+
+        elements.forEach((el, index) => {
+          const computedStyle = window.getComputedStyle(el);
+          const elementStyles = {
+            backgroundColor: computedStyle.backgroundColor,
+            color: computedStyle.color,
+            borderColor: computedStyle.borderColor,
+            boxShadow: computedStyle.boxShadow,
+            className: el.className,
+          };
+
+          // إضافة معرف فريد لكل عنصر إذا لم يكن موجودًا
+          if (!el.dataset.styleId) {
+            el.dataset.styleId = `element-${index}`;
+          }
+
+          stylesMap.set(el.dataset.styleId, elementStyles);
+        });
+
+        originalStylesRef.current = stylesMap;
+
+        // حفظ الخلفية الأصلية للصفحة
+        setCurrentBackgroundColor("bg-white");
+      };
+
+      // تأخير قليل للتأكد من تحميل جميع العناصر
+      setTimeout(saveOriginalStyles, 500);
+    }
+  }, []);
+
   // أسعار الصرف
   const exchangeRates = [
     {
@@ -196,8 +243,49 @@ export default function Dashboard() {
     },
   ];
 
+  // تغيير لون خلفية الصفحة
+  const changeBackgroundColor = (color) => {
+    if (dashboardRef.current) {
+      // إزالة الخلفية الحالية
+      dashboardRef.current.classList.remove(currentBackgroundColor);
+      // إضافة الخلفية الجديدة
+      dashboardRef.current.classList.add(color);
+      // تحديث الحالة
+      setCurrentBackgroundColor(color);
+    }
+  };
+
+  // استعادة الأنماط الأصلية
+  const restoreOriginalStyles = () => {
+    if (dashboardRef.current && originalStylesRef.current) {
+      // استعادة الخلفية الأصلية
+      dashboardRef.current.classList.remove(currentBackgroundColor);
+      dashboardRef.current.classList.add("bg-white");
+      setCurrentBackgroundColor("bg-white");
+
+      toast({
+        title: "تم بنجاح",
+        description: "تم استعادة الألوان والأنماط الأصلية",
+      });
+    }
+  };
+
+  // قائمة الألوان المتاحة للخلفية
+  const backgroundColors = [
+    { name: "أبيض", class: "bg-white" },
+    { name: "أزرق فاتح", class: "bg-blue-50" },
+    { name: "أخضر فاتح", class: "bg-green-50" },
+    { name: "أصفر فاتح", class: "bg-yellow-50" },
+    { name: "وردي فاتح", class: "bg-pink-50" },
+    { name: "بنفسجي فاتح", class: "bg-purple-50" },
+    { name: "رمادي فاتح", class: "bg-gray-50" },
+  ];
+
   return (
-    <div className="space-y-4 md:space-y-6 pb-32 px-3 md:px-6 min-h-screen bg-white flex flex-col items-center pt-4 max-w-full">
+    <div
+      ref={dashboardRef}
+      className={`space-y-4 md:space-y-6 p-0 min-h-screen h-screen w-screen ${currentBackgroundColor} flex flex-col items-center`}
+    >
       {/* رأس الصفحة */}
 
       {/* بطاقة الرصيد الرئيسية */}
@@ -517,6 +605,51 @@ export default function Dashboard() {
         }}
         customerId={customer?.id || 101} // استخدام معرف العميل الحالي أو القيمة الافتراضية
       />
+
+      {/* أزرار تغيير الخلفية واستعادة الأنماط الأصلية */}
+      <div className="fixed bottom-24 left-4 flex flex-col gap-2">
+        <Popover open={showColorPicker} onOpenChange={setShowColorPicker}>
+          <PopoverTrigger asChild>
+            <Button
+              size="icon"
+              className="rounded-full bg-primary shadow-lg hover:bg-primary/90"
+              onClick={() => setShowColorPicker(true)}
+            >
+              <Palette className="h-5 w-5" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64 p-2" side="top">
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-center mb-2">
+                اختر لون الخلفية
+              </h3>
+              <div className="grid grid-cols-3 gap-2">
+                {backgroundColors.map((color) => (
+                  <button
+                    key={color.class}
+                    className={`${color.class} p-4 rounded-md border hover:border-primary transition-all`}
+                    onClick={() => {
+                      changeBackgroundColor(color.class);
+                      setShowColorPicker(false);
+                    }}
+                    title={color.name}
+                  />
+                ))}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        <Button
+          size="icon"
+          variant="outline"
+          className="rounded-full bg-white shadow-lg"
+          onClick={restoreOriginalStyles}
+          title="استعادة الألوان الأصلية"
+        >
+          <RotateCcw className="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   );
 }
