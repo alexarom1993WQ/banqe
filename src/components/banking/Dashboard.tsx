@@ -51,6 +51,7 @@ export default function Dashboard() {
   const [showExchangeRates, setShowExchangeRates] = useState(false);
   const [showAddCurrency, setShowAddCurrency] = useState(false);
   const [showWallets, setShowWallets] = useState(false);
+  const [showWalletsSection, setShowWalletsSection] = useState(true);
   const [showAccountNumber, setShowAccountNumber] = useState(false);
   const [accountActivated, setAccountActivated] = useState(false);
 
@@ -208,9 +209,6 @@ export default function Dashboard() {
 
         <CardHeader className="p-3 md:p-6 relative z-10">
           <div className="flex flex-col justify-center items-center">
-            <h3 className="text-sm md:text-base font-medium text-white/80 mb-1">
-              بنك الأمان
-            </h3>
             <CardTitle className="text-xl md:text-2xl font-bold">
               الرصيد الإجمالي
             </CardTitle>
@@ -366,26 +364,42 @@ export default function Dashboard() {
 
           {/* المحافظ الإلكترونية داخل البطاقة الرئيسية */}
           <div className="mt-4 mb-4">
-            <h3 className="text-sm font-bold text-white/90 mb-3 text-center">
-              المحافظ الإلكترونية
-            </h3>
-            <div className="overflow-x-auto pb-2 scrollbar-hide">
-              <div className="flex gap-2 justify-start w-full">
-                {electronicWallets.map((wallet, index) => (
-                  <div
-                    key={index}
-                    className="bg-white/10 rounded-lg shadow-md border border-white/10 hover:border-white/30 transition-all text-center min-w-[120px] cursor-pointer overflow-hidden"
-                  >
-                    <img
-                      src={wallet.icon}
-                      alt={wallet.name}
-                      className="w-full h-24 object-cover"
-                      loading="lazy"
-                    />
-                  </div>
-                ))}
+            <button
+              onClick={() => setShowWalletsSection(!showWalletsSection)}
+              className="w-full text-center bg-white/10 hover:bg-white/20 py-2 rounded-lg transition-all mb-3"
+            >
+              <h3 className="text-sm font-bold text-white/90 inline-flex items-center">
+                المحافظ الإلكترونية
+                <span className="mr-2">{showWalletsSection ? "▲" : "▼"}</span>
+              </h3>
+            </button>
+
+            {showWalletsSection && (
+              <div
+                className="overflow-x-auto pb-2"
+                style={{
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                  WebkitScrollbar: { display: "none" },
+                }}
+              >
+                <div className="flex gap-2 justify-start w-full">
+                  {electronicWallets.map((wallet, index) => (
+                    <div
+                      key={index}
+                      className="bg-white/10 rounded-lg shadow-md border border-white/10 hover:border-white/30 transition-all text-center min-w-[120px] cursor-pointer overflow-hidden"
+                    >
+                      <img
+                        src={wallet.icon}
+                        alt={wallet.name}
+                        className="w-full h-24 object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>
