@@ -280,15 +280,21 @@ export default function Dashboard() {
     { name: "وردي فاتح", class: "bg-pink-50" },
     { name: "بنفسجي فاتح", class: "bg-purple-50" },
     { name: "رمادي فاتح", class: "bg-gray-50" },
+    { name: "برتقالي فاتح", class: "bg-orange-50" },
+    { name: "أحمر فاتح", class: "bg-red-50" },
+    { name: "أزرق داكن", class: "bg-blue-100" },
+    { name: "أخضر داكن", class: "bg-green-100" },
+    { name: "بنفسجي داكن", class: "bg-purple-100" },
+    { name: "رمادي داكن", class: "bg-gray-100" },
+    { name: "ذهبي فاتح", class: "bg-amber-50" },
   ];
 
   return (
     <div
       ref={dashboardRef}
-      className={`space-y-4 md:space-y-6 p-4 min-h-screen ${currentBackgroundColor}`}
+      className={`space-y-4 md:space-y-6 p-0 min-h-screen w-full h-screen ${currentBackgroundColor}`}
     >
       {/* رأس الصفحة */}
-
       {/* بطاقة الرصيد الرئيسية */}
       <Card className="bg-gradient-to-r from-blue-500 to-blue-400 text-white overflow-hidden relative w-full h-full shadow-xl rounded-xl border border-primary-foreground/5 backdrop-blur-sm">
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-xl"></div>
@@ -492,7 +498,6 @@ export default function Dashboard() {
           </div>
         </CardContent>
       </Card>
-
       {/* أسعار الصرف */}
       {showExchangeRates && (
         <Card className="max-w-4xl mx-auto w-full shadow-lg border-primary/10 backdrop-blur-sm bg-white">
@@ -536,7 +541,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       )}
-
       {/* المحافظ الإلكترونية */}
       {showWallets && (
         <Card className="max-w-4xl mx-auto w-full shadow-lg border-primary/10 bg-white">
@@ -591,7 +595,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       )}
-
       {/* نافذة فتح حساب جديد */}
       <OpenNewAccount
         open={isOpenAccountDialogOpen}
@@ -604,43 +607,11 @@ export default function Dashboard() {
             description: "تم فتح الحساب الجديد بنجاح",
           });
         }}
-        customerId={customer?.id || 101} // استخدام معرف العميل الحالي أو القيمة الافتراضية
+        // استخدام معرف العميل الحالي أو القيمة الافتراضية
+        customerId={customer?.id || 101}
       />
-
       {/* أزرار تغيير الخلفية واستعادة الأنماط الأصلية */}
       <div className="fixed bottom-24 left-4 flex flex-col gap-2">
-        <Popover open={showColorPicker} onOpenChange={setShowColorPicker}>
-          <PopoverTrigger asChild>
-            <Button
-              size="icon"
-              className="rounded-full bg-primary shadow-lg hover:bg-primary/90"
-              onClick={() => setShowColorPicker(true)}
-            >
-              <Palette className="h-5 w-5" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-64 p-2" side="top">
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-center mb-2">
-                اختر لون الخلفية
-              </h3>
-              <div className="grid grid-cols-3 gap-2">
-                {backgroundColors.map((color) => (
-                  <button
-                    key={color.class}
-                    className={`${color.class} p-4 rounded-md border hover:border-primary transition-all`}
-                    onClick={() => {
-                      changeBackgroundColor(color.class);
-                      setShowColorPicker(false);
-                    }}
-                    title={color.name}
-                  />
-                ))}
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-
         <Button
           size="icon"
           variant="outline"
